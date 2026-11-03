@@ -1,0 +1,217 @@
+@startuml DiagramaClases
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+skinparam packageStyle rectangle
+
+package "com.example.taberna.eventbus" {
+    interface Evento <<interface, marker>> {
+    }
+
+    interface Suscriptor<T extends Evento> <<functional interface>> {
+        +onEvento(evento: T): void
+    }
+
+    class EventBus {
+        -suscriptores: Map<Class<? extends Evento>, List<Suscriptor<? extends Evento>>>
+        +suscribir(tipoEvento: Class<T>, suscriptor: Suscriptor<T>): void
+        +desuscribir(tipoEvento: Class<T>, suscriptor: Suscriptor<T>): void
+        +desuscribir(suscriptor: Suscriptor<?>): void
+        +publicar(evento: T): void
+        +contarSuscriptores(tipoEvento: Class<? extends Evento>): int
+        +tieneSuscriptores(tipoEvento: Class<? extends Evento>): boolean
+        +limpiar(): void
+    }
+}
+
+package "com.example.taberna.dominio.eventos" {
+    class BandaTocandoEvent <<record>> implements Evento {
+        -nombreBanda: String
+        -nombreCancion: String
+        -duracion: int
+        +nombreBanda(): String
+        +nombreCancion(): String
+        +duracion(): int
+    }
+
+    class PocionElaboradaEvento <<record>> implements Evento {
+        -nombrePocion: String
+        -alquimista: String
+        +nombrePocion(): String
+        +alquimista(): String
+    }
+
+    class IngredienteAgotadoEvento <<record>> implements Evento {
+        -ingrediente: String
+        +ingrediente(): String
+    }
+}
+
+package "com.example.taberna.dominio.actores" {
+    class Banda implements AutoCloseable {
+        -nombre: String
+        -bus: EventBus
+        -repertorio: List<Cancion>
+        -scheduler: ScheduledExecutorService
+        -tocando: boolean
+        +iniciarConcierto(periodo: long, unidad: TimeUnit): void
+        +detenerConcierto(): void
+        -tocarSiguientePieza(): void
+    }
+
+    class Alquimista {
+        -nombre: String
+        -bus: EventBus
+        +elaborarPocion(pocion: String, ingredienteClave: String): void
+    }
+
+    class SistemaDeSonido {
+        -volumenPrincipal: int
+        +reproducirCancion(evento: BandaTocandoEvent): void
+        +ajustarVolumen(nuevoVolumen: int): void
+    }
+
+    class SistemaDeHumo {
+        -disparosRealizados: int
+        +accionarHumo(evento: BandaTocandoEvent): void
+        +getDisparosRealizados(): int
+    }
+
+    class PanelLED {
+        +mostrarMusica(evento: BandaTocandoEvent): void
+        +mostrarPocion(evento: PocionElaboradaEvento): void
+        +mostrarAlertaIngrediente(evento: IngredienteAgotadoEvento): void
+    }
+
+    class Inventario {
+        +registrarPocion(evento: PocionElaboradaEvento): void
+        +alertarFaltaIngrediente(evento: IngredienteAgotadoEvento): void
+    }
+
+    class Tabernero {
+        -nombre: String
+        +celebrarElaboracion(evento: PocionElaboradaEvento): void
+    }
+}
+
+EventBus o-- Suscriptor
+EventBus ..> Evento : despacha
+Banda --> EventBus : publica BandaTocandoEvent
+Alquimista --> EventBus : publica PocionElaborada / IngredienteAgotado
+SistemaDeSonido ..> BandaTocandoEvent : consume via ::reproducirCancion
+SistemaDeHumo ..> BandaTocandoEvent : consume via ::accionarHumo
+PanelLED ..> Evento : consume múltiples eventos
+Inventario ..> PocionElaboradaEvento : consume
+Inventario ..> IngredienteAgotadoEvento : consume
+Tabernero ..> PocionElaboradaEvento : consume
+
+@enduml
+
+@startuml DiagramaSecuencia
+skinparam monochrome true
+autonumber
+
+actor "TabernaSimulador" as Main
+participant "banda: Banda" as Banda
+participant "Hilo-Banda" as Hilo
+participant "bus: EventBus" as EventBus
+participant "sonido: SistemaDeSonido" as Sonido
+participant "humo: SistemaDeHumo" as Humo
+participant "panel: PanelLED" as Panel
+
+Main -> EventBus: suscribir(BandaTocandoEvent.class, sonido::reproducirCancion)
+Main -> EventBus: suscribir(BandaTocandoEvent.class, humo::accionarHumo)
+Main -> EventBus: suscribir(BandaTocandoEvent.class, panel::mostrarMusica)
+
+Main -> Banda: iniciarConcierto(periodo, unidad)
+activate Banda
+Banda -> Hilo**: scheduleAtFixedRate(...)
+deactivate Banda
+
+activate Hilo
+Hilo -> Banda: tocarSiguientePieza()
+activate Banda
+Banda -> EventBus: publicar(new BandaTocandoEvent("Los Bardos", "Through the Fire and Flames", 440))
+activate EventBus
+
+EventBus -> Sonido: reproducirCancion(evento)
+activate Sonido
+Sonido --> EventBus: [Consola] Amplificando canción
+deactivate Sonido
+
+EventBus -> Humo: accionarHumo(evento)
+activate Humo
+note over Humo: Filtra si canción == "Through the Fire and Flames"
+Humo --> EventBus: [Consola] ¡¡¡FWOOOOOSH!!! Disparando cañones de humo
+deactivate Humo
+
+EventBus -> Panel: mostrarMusica(evento)
+activate Panel
+Panel --> EventBus: [Consola] Marquee LED en vivo
+deactivate Panel
+
+EventBus --> Banda: entrega completada
+deactivate EventBus
+deactivate Banda
+deactivate Hilo
+
+Main -> Banda: detenerConcierto()
+activate Banda
+Banda -> Hilo: shutdown()
+deactivate Banda
+
+@enduml
+
+@startuml DiagramaComponentes
+skinparam monochrome true
+
+package "Capa de Infraestructura (Event Bus)" {
+    [EventBus Engine] as BusEngine
+    interface "Evento (Marker)" as IEvento
+    interface "Suscriptor<T>" as ISuscriptor
+
+    BusEngine -up-> IEvento
+    BusEngine -right-> ISuscriptor
+}
+
+package "Capa de Dominio - Eventos" {
+    component [PocionElaboradaEvento] as EvtPocion
+    component [IngredienteAgotadoEvento] as EvtIngrediente
+    component [BandaTocandoEvent] as EvtBanda
+
+    EvtPocion .up.|> IEvento
+    EvtIngrediente .up.|> IEvento
+    EvtBanda .up.|> IEvento
+}
+
+package "Capa de Dominio - Publicadores" {
+    [Alquimista (Publisher)] as PubAlquimista
+    [Banda Concurrente (Publisher)] as PubBanda
+
+    PubAlquimista --> BusEngine : publica (Síncrono)
+    PubBanda --> BusEngine : publica (Asíncrono / Thread)
+}
+
+package "Capa de Dominio - Suscriptores" {
+    [Inventario] as SubInventario
+    [Tabernero] as SubTabernero
+    [SistemaDeSonido] as SubSonido
+    [PanelLED] as SubLED
+    [SistemaDeHumo (Extensión OCP)] as SubHumo
+
+    SubInventario .up.|> ISuscriptor : via ::registrarPocion, ::alertarFaltaIngrediente
+    SubTabernero .up.|> ISuscriptor : via ::celebrarElaboracion
+    SubSonido .up.|> ISuscriptor : via ::reproducirCancion
+    SubLED .up.|> ISuscriptor : via ::mostrarMusica, ::mostrarPocion...
+    SubHumo .up.|> ISuscriptor : via ::accionarHumo
+}
+
+package "Capa de Aplicación" {
+    [TabernaSimulador (Main)] as MainApp
+
+    MainApp ..> BusEngine : Configura y enlaza
+    MainApp ..> PubAlquimista : Inyecta Bus
+    MainApp ..> PubBanda : Inyecta Bus
+    MainApp ..> SubHumo : Extiende sin modificar Bus ni Banda
+}
+
+@enduml
