@@ -32,8 +32,8 @@ public class Tabernero {
      */
     public void celebrarElaboracion(PocionElaboradaEvento evento) {
         Objects.requireNonNull(evento, "El evento de poción elaborada no puede ser nulo.");
-        System.out.println("[Tabernero " + this.nombre + "] ¡Escuchad todos! Tenemos una nueva "
-                + evento.nombrePocion() + " recién salida del caldero.");
+        System.out.println("[Tabernero: " + this.nombre + "] Anuncio al público: Nueva poción disponible en barra - "
+                + evento.nombrePocion() + ".");
     }
 
     public String getNombre() {

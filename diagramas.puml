@@ -141,7 +141,7 @@ deactivate Sonido
 EventBus -> Humo: accionarHumo(evento)
 activate Humo
 note over Humo: Filtra si canción == "Through the Fire and Flames"
-Humo --> EventBus: [Consola] ¡¡¡FWOOOOOSH!!! Disparando cañones de humo
+Humo --> EventBus: [Consola] Despliegue de humo activado
 deactivate Humo
 
 EventBus -> Panel: mostrarMusica(evento)

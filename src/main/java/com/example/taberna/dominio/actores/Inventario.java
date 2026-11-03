@@ -29,7 +29,8 @@ public class Inventario {
      */
     public void registrarPocion(PocionElaboradaEvento evento) {
         Objects.requireNonNull(evento, "El evento de poción elaborada no puede ser nulo.");
-        System.out.println("[Inventario] Registrando +1 " + evento.nombrePocion() + " creada por " + evento.alquimista());
+        System.out.println("[Inventario] [INFO] Registro de producto: +1 " + evento.nombrePocion()
+                + " | Elaborado por: " + evento.alquimista());
     }
 
     /**
@@ -40,6 +41,7 @@ public class Inventario {
      */
     public void alertarFaltaIngrediente(IngredienteAgotadoEvento evento) {
         Objects.requireNonNull(evento, "El evento de ingrediente agotado no puede ser nulo.");
-        System.out.println("[Inventario] ALERTA: Comprar más " + evento.ingrediente());
+        System.out.println("[Inventario] [ALERTA] Suministro crítico agotado: " + evento.ingrediente()
+                + ". Se requiere reabastecimiento.");
     }
 }

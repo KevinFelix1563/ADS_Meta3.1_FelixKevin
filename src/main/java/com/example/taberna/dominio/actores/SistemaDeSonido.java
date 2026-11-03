@@ -26,14 +26,13 @@ public class SistemaDeSonido {
      */
     public void reproducirCancion(BandaTocandoEvent evento) {
         Objects.requireNonNull(evento, "El evento musical no puede ser nulo.");
-        System.out.println("[SistemaDeSonido] 🔊 [Volumen " + this.volumenPrincipal + "%] "
-                + "Amplificando \"" + evento.nombreCancion() + "\" interpretada por "
-                + evento.nombreBanda() + " (Duración: " + evento.duracion() + "s)");
+        System.out.println("[SistemaDeSonido] Amplificando señal de audio. Pista: \""
+                + evento.nombreCancion() + "\" | Duración: " + evento.duracion() + "s");
     }
 
     public void ajustarVolumen(int nuevoVolumen) {
         this.volumenPrincipal = Math.clamp(nuevoVolumen, 0, 100);
-        System.out.println("[SistemaDeSonido] Volumen reajustado a: " + this.volumenPrincipal + "%");
+        System.out.println("[SistemaDeSonido] Nivel de volumen actualizado a " + this.volumenPrincipal + "%.");
     }
 
     public int getVolumenPrincipal() {

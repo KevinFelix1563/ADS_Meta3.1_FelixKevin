@@ -48,7 +48,7 @@ public class Alquimista {
         Objects.requireNonNull(pocion, "La poción no puede ser nula.");
 
         // a) Mensaje de actividad en consola
-        System.out.println("[Alquimista " + this.nombre + "] elaborando " + pocion + "...");
+        System.out.println("[Alquimista: " + this.nombre + "] Iniciando proceso de elaboración: " + pocion + ".");
 
         // b) Notificación de elaboración exitosa a través del bus
         this.bus.publicar(new PocionElaboradaEvento(pocion, this.nombre));

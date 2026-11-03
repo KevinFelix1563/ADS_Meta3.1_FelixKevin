@@ -29,9 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class TabernaSimulador {
 
     public static void main(String[] args) {
-        System.out.println("=================================================================");
-        System.out.println("  SIMULACIÓN FINAL: EL GÓLEM ALQUÍMICO (INCREMENTO 4 - OCP)");
-        System.out.println("=================================================================\n");
+        System.out.println("[INFO] Sistema de eventos inicializado.");
 
         // 1. Instanciamos el Bus central de eventos
         EventBus bus = new EventBus();
@@ -62,26 +60,25 @@ public class TabernaSimulador {
         bus.suscribir(PocionElaboradaEvento.class, panelLED::mostrarPocion);
         bus.suscribir(IngredienteAgotadoEvento.class, panelLED::mostrarAlertaIngrediente);
 
-        System.out.println(">>> 1. INICIANDO LA BANDA Y EFECTOS EN PARALELO <<<");
+        System.out.println("[INFO] Iniciando componentes de ejecución concurrente.");
         banda.iniciarConcierto(800, TimeUnit.MILLISECONDS);
 
         try {
             // Breve espera para que la banda arranque y suene la primera pieza del repertorio
             Thread.sleep(400);
 
-            System.out.println("\n>>> 2. ACTIVIDAD ALQUÍMICA EN EL HILO PRINCIPAL <<<");
+            System.out.println("[INFO] Ejecución de actividades en hilo principal.");
             alquimista.elaborarPocion("Poción Curativa Mayor", "Raíz de Mandrágora");
 
             Thread.sleep(900);
 
-            System.out.println("\n>>> 3. CLÍMAX DEL CONCIERTO: LA BANDA TOCA EL TEMA ESPERADO <<<");
-            // La banda interpreta el tema legendario solicitado por la multitud
-            System.out.println("[Banda " + banda.getNombre() + "] 🎸 ¡A pedido del público de la taberna: \"Through the Fire and Flames\"!");
+            System.out.println("[INFO] Ejecución de pista especial solicitada.");
+            System.out.println("[Banda: " + banda.getNombre() + "] Iniciando ejecución de pista: \"Through the Fire and Flames\"");
             bus.publicar(new BandaTocandoEvent(banda.getNombre(), "Through the Fire and Flames", 440));
 
             Thread.sleep(800);
 
-            System.out.println("\n>>> 4. DESUSCRIPCIÓN DEL TABERNERO Y CONTINUIDAD DE LA TABERNA <<<");
+            System.out.println("[INFO] Actualización de suscripciones activas.");
             bus.desuscribir(PocionElaboradaEvento.class, celebracionTabernero);
             alquimista.elaborarPocion("Elixir de Fuerza de Titán", "Pelo de Minotauro");
 
@@ -89,14 +86,12 @@ public class TabernaSimulador {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.err.println("Simulación interrumpida.");
+            System.err.println("[ERROR] Proceso interrumpido.");
         } finally {
-            System.out.println("\n>>> 5. CIERRE CONTROLADO DEL CONCIERTO <<<");
+            System.out.println("[INFO] Deteniendo componentes concurrentes.");
             banda.detenerConcierto();
         }
 
-        System.out.println("\n=================================================================");
-        System.out.println("  SIMULACIÓN FINAL COMPLETADA CON ÉXITO (OCP DEMOSTRADO)");
-        System.out.println("=================================================================");
+        System.out.println("[INFO] Cierre del sistema completado.");
     }
 }

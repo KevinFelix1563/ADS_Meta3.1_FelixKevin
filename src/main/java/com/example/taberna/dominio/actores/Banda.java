@@ -66,7 +66,7 @@ public class Banda implements AutoCloseable {
      */
     public synchronized void iniciarConcierto(long periodo, TimeUnit unidad) {
         if (this.tocando) {
-            System.out.println("[Banda " + this.nombre + "] ¡Ya estamos en el escenario tocando!");
+            System.out.println("[Banda: " + this.nombre + "] La banda ya se encuentra en ejecución.");
             return;
         }
 
@@ -78,7 +78,7 @@ public class Banda implements AutoCloseable {
             return thread;
         });
 
-        System.out.println("[Banda " + this.nombre + "] 🎵 Subiendo al escenario. ¡Comienza el concierto!");
+        System.out.println("[Banda: " + this.nombre + "] Inicio de presentación en escenario.");
 
         // Programamos la ejecución periódica
         this.scheduler.scheduleAtFixedRate(this::tocarSiguientePieza, 0, periodo, unidad);
@@ -103,8 +103,8 @@ public class Banda implements AutoCloseable {
                 cancionActual.duracionSegundos()
         );
 
-        System.out.println("[Banda " + this.nombre + "] 🎸 Interpretando: \""
-                + cancionActual.titulo() + "\" (Hilo: " + Thread.currentThread().getName() + ")");
+        System.out.println("[Banda: " + this.nombre + "] Iniciando ejecución de pista: \""
+                + cancionActual.titulo() + "\"");
 
         // Publicación del evento hacia el EventBus
         this.bus.publicar(evento);
@@ -119,7 +119,7 @@ public class Banda implements AutoCloseable {
         }
 
         this.tocando = false;
-        System.out.println("[Banda " + this.nombre + "] 🎶 Concierto finalizado. ¡Gracias, taberna!");
+        System.out.println("[Banda: " + this.nombre + "] Finalización de presentación musical.");
 
         if (this.scheduler != null && !this.scheduler.isShutdown()) {
             this.scheduler.shutdown();

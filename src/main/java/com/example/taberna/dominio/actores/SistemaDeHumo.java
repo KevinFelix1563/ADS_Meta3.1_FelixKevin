@@ -42,16 +42,8 @@ public class SistemaDeHumo {
 
         if (CANCION_DISPARADORA.equalsIgnoreCase(evento.nombreCancion().trim())) {
             this.disparosRealizados++;
-            System.out.println("================================================================================");
-            System.out.println("[SistemaDeHumo] 💨💨💨 ¡¡¡FWOOOOOSH!!! ¡¡DISPARANDO CAÑONES DE CO2 Y HUMO DENSO!!");
-            System.out.println("[SistemaDeHumo] 💨 Niebla envolviendo el escenario para el solo épico de: \""
-                    + evento.nombreCancion() + "\" interpretado por " + evento.nombreBanda() + "!");
-            System.out.println("[SistemaDeHumo] 💨 [Efecto de Humo #" + this.disparosRealizados + " activado con éxito]");
-            System.out.println("================================================================================");
-        } else {
-            // Para otras canciones, el sistema permanece en espera pasiva
-            System.out.println("[SistemaDeHumo] (En espera) La canción \"" + evento.nombreCancion()
-                    + "\" no requiere pirotecnia de humo.");
+            System.out.println("[SistemaDeHumo] Despliegue de humo activado. Disparador: \""
+                    + CANCION_DISPARADORA + "\".");
         }
     }
 

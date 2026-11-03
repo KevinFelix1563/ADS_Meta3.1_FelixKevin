@@ -28,8 +28,8 @@ public class PanelLED {
      */
     public void mostrarMusica(BandaTocandoEvent evento) {
         Objects.requireNonNull(evento, "El evento de banda no puede ser nulo.");
-        System.out.println("[PanelLED] 🌟 [CARTEL LUMINOSO] >> En el escenario: "
-                + evento.nombreBanda() + " tocando \"" + evento.nombreCancion() + "\" <<");
+        System.out.println("[PanelLED] [INFO] En escenario: "
+                + evento.nombreBanda() + " interpretando \"" + evento.nombreCancion() + "\"");
     }
 
     /**
@@ -38,17 +38,17 @@ public class PanelLED {
      */
     public void mostrarPocion(PocionElaboradaEvento evento) {
         Objects.requireNonNull(evento, "El evento de poción no puede ser nulo.");
-        System.out.println("[PanelLED] 🧪 [OFERTA TABERNA] >> ¡Poción fresca en barra: "
-                + evento.nombrePocion() + " por " + evento.alquimista() + "! <<");
+        System.out.println("[PanelLED] [INFO] Nueva poción en barra: "
+                + evento.nombrePocion() + " (Alquimista: " + evento.alquimista() + ")");
     }
 
     /**
-     * Muestra avisos urgentes en rojo ante la falta de suministros críticos.
+     * Muestra avisos urgentes ante la falta de suministros críticos.
      * Compatible con {@code Suscriptor<IngredienteAgotadoEvento>}.
      */
     public void mostrarAlertaIngrediente(IngredienteAgotadoEvento evento) {
         Objects.requireNonNull(evento, "El evento de ingrediente no puede ser nulo.");
-        System.out.println("[PanelLED] 🚨 [ALERTA CRÍTICA] >> SE AGOTÓ: "
-                + evento.ingrediente().toUpperCase() + " (Favor de no pedir bebidas con este ingrediente) <<");
+        System.out.println("[PanelLED] [ALERTA] Inventario agotado: "
+                + evento.ingrediente().toUpperCase());
     }
 }
